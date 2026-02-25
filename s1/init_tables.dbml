@@ -1,0 +1,269 @@
+Table role {
+  id bigserial [pk]
+  code varchar(50) [not null, unique]
+  name varchar(100) [not null]
+  description text
+  is_system boolean [default: false]
+  status varchar(20) [not null]
+  created_at timestamptz [default: `now()`]
+  updated_at timestamptz [default: `now()`]
+}
+
+Table unit {
+  id bigserial [pk]
+  name varchar(255) [not null]
+  type varchar(50) [not null]
+  code varchar(50) [unique]
+  parent_id bigint
+  email varchar(255)
+  phone varchar(20)
+  status varchar(20) [not null]
+  created_at timestamptz [default: `now()`]
+  updated_at timestamptz [default: `now()`]
+}
+
+Table "user" as users {
+  id bigserial [pk]
+  full_name varchar(255) [not null]
+  middle_name varchar(100)
+  email varchar(255) [not null, unique]
+  phone varchar(30)
+  role_id bigint
+  unit_id bigint
+  student_number varchar(50)
+  employee_position varchar(100)
+  status varchar(20) [not null]
+  created_at timestamptz [default: `now()`]
+  updated_at timestamptz [default: `now()`]
+  last_login_at timestamptz
+}
+
+Table flow {
+  id bigserial [pk]
+  code varchar(50) [not null, unique]
+  title varchar(255) [not null]
+  unit_id bigint
+  owner_id bigint
+  credits numeric(4, 1)
+  cohort_year int
+  modality varchar(20)
+  language varchar(50)
+  start_date date
+  end_date date
+  add_drop_deadline date
+  exam_window_start date
+  exam_window_end date
+  grade_submit_deadline date
+  max_students int
+  status varchar(20) [not null]
+  created_at timestamptz [default: `now()`]
+  updated_at timestamptz [default: `now()`]
+}
+
+Table discipline {
+  id bigserial [pk]
+  code varchar(50) [not null, unique]
+  title varchar(255) [not null]
+  description text
+  ects_credits numeric(4, 1)
+  unit_id bigint
+  flow_id bigint
+  lecturer_id bigint
+  level varchar(20)
+  language varchar(50)
+  status varchar(20) [not null]
+  created_at timestamptz [default: `now()`]
+  updated_at timestamptz [default: `now()`]
+}
+
+Table classroom {
+  id bigserial [pk]
+  building varchar(100)
+  room_number varchar(20)
+  campus varchar(100)
+  capacity int
+  floor int
+  has_projector boolean
+  has_pc boolean
+  is_accessible boolean
+  status varchar(20)
+  created_at timestamptz [default: `now()`]
+  updated_at timestamptz [default: `now()`]
+
+  Indexes {
+    (building, room_number) [unique, name: 'uq_classroom']
+  }
+}
+
+Table lesson {
+  id bigserial [pk]
+  flow_id bigint
+  auditorium_id bigint
+  type varchar(20)
+  topic varchar(255)
+  start_at timestamptz
+  end_at timestamptz
+  teacher_id bigint
+  online_link varchar(255)
+  attendance_required boolean
+  status varchar(20)
+  created_at timestamptz [default: `now()`]
+  updated_at timestamptz [default: `now()`]
+}
+
+Table exam_status {
+  id serial [pk]
+  name text [not null, unique]
+}
+
+Table assignment_status {
+  id serial [pk]
+  name text [not null, unique]
+}
+
+Table assignment {
+  id bigserial [pk]
+  flow_id bigint
+  discipline_id bigint
+  title varchar(255)
+  type varchar(20)
+  description text
+  release_at timestamptz
+  due_at timestamptz
+  late_policy varchar(20)
+  submission_type varchar(20)
+  allow_multiple boolean
+  max_attempts int
+  max_score numeric(5, 2)
+  visibility varchar(20)
+  status varchar(20)
+  status_id int
+  created_at timestamptz [default: `now()`]
+  updated_at timestamptz [default: `now()`]
+}
+
+Table enrollment {
+  id bigserial [pk]
+  user_id bigint
+  discipline_id bigint
+  flow_id bigint
+  enrolled_at timestamptz
+  dropped_at timestamptz
+  attendance_pct numeric(5, 2)
+  current_score numeric(6, 2)
+  final_grade varchar(5)
+  status varchar(20)
+  created_at timestamptz [default: `now()`]
+  updated_at timestamptz [default: `now()`]
+
+  Indexes {
+    (user_id, flow_id) [unique]
+  }
+}
+
+Table exam {
+  id bigserial [pk]
+  flow_id bigint
+  discipline_id bigint
+  type varchar(20)
+  scheduled_start timestamptz
+  scheduled_end timestamptz
+  auditorium_id bigint
+  format varchar(20)
+  duration_min int
+  max_score numeric(5, 2)
+  proctor_id bigint
+  status varchar(20)
+  status_id int
+  created_at timestamptz [default: `now()`]
+  updated_at timestamptz [default: `now()`]
+}
+
+Table user_role {
+  user_id bigint [not null]
+  role_id bigint [not null]
+
+  Indexes {
+    (user_id, role_id) [pk]
+  }
+}
+
+Table discipline_teacher {
+  discipline_id bigint [not null]
+  teacher_id bigint [not null]
+
+  Indexes {
+    (discipline_id, teacher_id) [pk]
+  }
+}
+
+Table lesson_classroom {
+  lesson_id bigint [not null]
+  classroom_id bigint [not null]
+
+  Indexes {
+    (lesson_id, classroom_id) [pk]
+  }
+}
+
+Table exam_classroom {
+  exam_id bigint [not null]
+  classroom_id bigint [not null]
+
+  Indexes {
+    (exam_id, classroom_id) [pk]
+  }
+}
+
+Table lecturer_phone {
+  lecturer_id bigint [not null]
+  phone_number text [not null]
+
+  Indexes {
+    (lecturer_id, phone_number) [pk]
+  }
+}
+
+Ref: unit.parent_id > unit.id
+
+Ref: users.role_id > role.id
+Ref: users.unit_id > unit.id
+
+Ref: flow.unit_id > unit.id
+Ref: flow.owner_id > users.id
+
+Ref: discipline.unit_id > unit.id
+Ref: discipline.flow_id > flow.id
+Ref: discipline.lecturer_id > users.id
+
+Ref: lesson.flow_id > flow.id
+Ref: lesson.auditorium_id > classroom.id
+Ref: lesson.teacher_id > users.id
+
+Ref: assignment.flow_id > flow.id
+Ref: assignment.discipline_id > discipline.id
+Ref: assignment.status_id > assignment_status.id [delete: set null]
+
+Ref: enrollment.user_id > users.id
+Ref: enrollment.discipline_id > discipline.id
+Ref: enrollment.flow_id > flow.id
+
+Ref: exam.flow_id > flow.id
+Ref: exam.discipline_id > discipline.id
+Ref: exam.auditorium_id > classroom.id
+Ref: exam.proctor_id > users.id
+Ref: exam.status_id > exam_status.id [delete: set null]
+
+Ref: user_role.user_id > users.id [delete: cascade]
+Ref: user_role.role_id > role.id [delete: cascade]
+
+Ref: discipline_teacher.discipline_id > discipline.id [delete: cascade]
+Ref: discipline_teacher.teacher_id > users.id [delete: cascade]
+
+Ref: lesson_classroom.lesson_id > lesson.id [delete: cascade]
+Ref: lesson_classroom.classroom_id > classroom.id [delete: cascade]
+
+Ref: exam_classroom.exam_id > exam.id [delete: cascade]
+Ref: exam_classroom.classroom_id > classroom.id [delete: cascade]
+
+Ref: lecturer_phone.lecturer_id > users.id [delete: cascade]
