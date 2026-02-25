@@ -1,0 +1,4 @@
+mode,query_key,planning_ms,execution_ms,shared_hit_blocks,shared_read_blocks,plan_rows,actual_rows,"scan_nodes"
+no_index,gt,0.189,55.760,11128,0,40053,40000,"Seq Scan on user"
+btree,gt,0.264,12.395,2611,156,39972,40000,"Index Scan using idx_user_student_number_btree"
+hash,gt,0.195,53.802,11128,0,39950,40000,"Seq Scan on user"
