@@ -1,4 +1,0 @@
-mode,query_key,planning_ms,execution_ms,shared_hit_blocks,shared_read_blocks,plan_rows,actual_rows,"scan_nodes"
-no_index,like_left,0.174,18.526,11128,0,20,135,"Seq Scan on user"
-btree,like_left,0.228,18.958,11128,0,20,135,"Seq Scan on user"
-hash,like_left,0.200,18.789,11128,0,20,135,"Seq Scan on user"

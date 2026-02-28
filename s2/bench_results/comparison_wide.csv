@@ -1,7 +1,0 @@
-query,no_index_ms,btree_ms,hash_ms,scan_no_index,scan_btree,scan_hash
-gt,55.760,12.395,53.802,"Seq Scan on user","Index Scan using idx_user_student_number_btree","Seq Scan on user"
-lt,57.359,12.439,55.287,"Seq Scan on user","Index Scan using idx_user_student_number_btree","Seq Scan on user"
-eq,17.873,0.090,0.045,"Seq Scan on user","Index Scan using idx_user_student_number_btree","Index Scan using idx_user_student_number_hash"
-like_left,18.526,18.958,18.789,"Seq Scan on user","Seq Scan on user","Seq Scan on user"
-like_right,17.861,18.323,18.528,"Seq Scan on user","Seq Scan on user","Seq Scan on user"
-in_list,22.106,0.131,0.078,"Seq Scan on user","Index Scan using idx_user_student_number_btree","Bitmap Heap Scan on user | Bitmap Index Scan using idx_user_student_number_hash"
