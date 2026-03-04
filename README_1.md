@@ -20,7 +20,29 @@ docker compose exec -T db psql -U admin -d Deanery < s2/data/01_reference_data.s
 docker compose exec -T db psql -U admin -d Deanery < s2/data/02_big_data.sql
 ```
 
-6) Проверка ролей
+5) Проверка ролей
 ```bash
 docker compose exec -T db psql -U admin -d Deanery < s2/checks/01_role_access.sql
+```
+
+6) Бенчмарки индексов
+```bash
+# btree/hash (старый)
+docker compose exec -T db psql -U admin -d Deanery -f s2/checks/02_index_bench.sql
+
+# GIN: 5 запросов (создание, сканирование, сравнение операций)
+docker compose exec -T db psql -U admin -d Deanery -f s2/checks/03_gin_bench.sql
+
+# GiST: 5 запросов (создание, сканирование, сравнение операций)
+docker compose exec -T db psql -U admin -d Deanery -f s2/checks/04_gist_bench.sql
+```
+
+7) 5 JOIN запросов и просмотр результатов объединения
+```bash
+docker compose exec -T db psql -U admin -d Deanery -f s2/checks/05_join_queries.sql
+```
+
+8) Мониторинг (Prometheus + Grafana + postgres-exporter)
+```bash
+docker compose --profile monitoring up -d postgres-exporter prometheus grafana
 ```
